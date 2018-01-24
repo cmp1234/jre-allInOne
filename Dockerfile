@@ -35,6 +35,7 @@ RUN set -ex; \
 	sed -i -e 's/edge/v3\.6/g' /etc/apk/repositories; \
 	adduser -u 18345 -D cmp;
 
+	
 #install python
 
 # install ca-certificates so that HTTPS works consistently
@@ -70,10 +71,35 @@ RUN set -ex; \
 		\) -exec rm -rf '{}' +; \
 	rm -f get-pip.py
 	
+	
 #install su&font
 RUN apk add --no-cache fontconfig ttf-dejavu
 RUN apk add --no-cache 'su-exec>=0.2'
 
+
+#install sshpass
+ENV SSHPASS_VERSION 1.06
+ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
+
+RUN curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
+	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
+	cd sshpass-${SSHPASS_VERSION}; \
+	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; 
+	
+	
+#install ansible
+RUN ansibleList=' \
+            pycrypto==2.6.1 \
+            ecdsa==0.13 \
+            paramiko==1.17.0 \
+            MarkupSafe==1.0 \
+            Jinja2==2.8 \
+            PyYAML==3.11 \
+            ansible==2.2.1.0 \
+        '; \
+  pip install $ansibleList;
+	
+	
 #install openssh
 COPY build_openssh.sh /build_openssh.sh 
 RUN chmod +x /build_openssh.sh
@@ -91,20 +117,20 @@ RUN set -ex; \
 		zlib-dev \
 		openssl \
 		openssl-dev \
+		bash \
+		python2-dev \
+		python3-dev \
 	; \
 	apk add --no-cache --virtual .run-deps \
 		libcrypto1.0 \
 	; \
 	
-	echo $PATH; \
-	ls -l /bin/sh; \
-	ls -l /; \
-	cat /build_openssh.sh; \
-	
   	sh /build_openssh.sh; \
 	apk del .build-deps; \
+	ln -s /usr/local/bin/bash /bin/bash; \
 	rm -f /build_openssh.sh;
 
+	
 #install geniso	
 RUN apk add --no-cache cdrkit
 
