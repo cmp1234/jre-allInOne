@@ -40,9 +40,9 @@ RUN set -ex; \
 # install ca-certificates so that HTTPS works consistently
 # the other runtime dependencies for Python are installed later
 ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
-ENV PYTHON_VERSION 2.7.13
+ENV PYTHON_VERSION 2.7.14
 
-RUN apk add --no-cache python2=2.7.13-r1 ca-certificates
+RUN apk add --no-cache python2=2.7.14-r2 ca-certificates
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 9.0.1
