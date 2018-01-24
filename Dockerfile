@@ -23,7 +23,7 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
-ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/bin
 
 ENV JAVA_VERSION 8u151
 ENV JAVA_ALPINE_VERSION 8.151.12-r0
@@ -35,6 +35,41 @@ RUN set -ex; \
 	sed -i -e 's/edge/v3\.6/g' /etc/apk/repositories; \
 	adduser -u 18345 -D cmp;
 
+#install python
+
+# install ca-certificates so that HTTPS works consistently
+# the other runtime dependencies for Python are installed later
+ENV GPG_KEY C01E1CAD5EA2C4F0B8E3571504C367C218ADD4FF
+ENV PYTHON_VERSION 2.7.13
+
+RUN apk add --no-cache python2=2.7.13-r1 ca-certificates
+
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ENV PYTHON_PIP_VERSION 9.0.1
+
+RUN set -ex; \
+	\
+	apk add --no-cache --virtual .fetch-deps libressl; \
+	\
+	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
+	\
+	apk del .fetch-deps; \
+	\
+	python get-pip.py \
+		--disable-pip-version-check \
+		--no-cache-dir \
+		"pip==$PYTHON_PIP_VERSION" \
+	; \
+	pip --version; \
+	\
+	find /usr/local -depth \
+		\( \
+			\( -type d -a -name test -o -name tests \) \
+			-o \
+			\( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+		\) -exec rm -rf '{}' +; \
+	rm -f get-pip.py
+	
 #install su&font
 RUN apk add --no-cache fontconfig ttf-dejavu
 RUN apk add --no-cache 'su-exec>=0.2'
