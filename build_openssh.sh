@@ -32,6 +32,8 @@ cd $OPENSSH
 
 ./configure --prefix=$PREFIX --with-zlib=../$ZLIB --with-ssl-dir=../$OPENSSL && make \
 && make install \
+&& cp contrib/ssh-copy-id /usr/local/bin/ \
+&& chmod +x /usr/local/bin/ssh-copy-id \
 && cd ../.. \
 && rm -rf src \
 && cp $PREFIX/bin/* /usr/local/bin/ \
