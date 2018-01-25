@@ -77,9 +77,12 @@ RUN apk add --no-cache fontconfig ttf-dejavu
 RUN apk add --no-cache 'su-exec>=0.2'
 
 	
-#install openssh
+#install sshpass&ansible
 COPY build_openssh.sh /build_openssh.sh 
 RUN chmod +x /build_openssh.sh
+
+ENV SSHPASS_VERSION 1.06
+ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
 
 RUN set -ex; \
 	\
@@ -98,6 +101,25 @@ RUN set -ex; \
 		python2-dev \
 		python3-dev \
 	; \
+	
+	ansibleList=' \
+            	pycrypto==2.6.1 \
+            	ecdsa==0.13 \
+            	paramiko==1.17.0 \
+            	MarkupSafe==1.0 \
+            	Jinja2==2.8 \
+            	PyYAML==3.11 \
+            	ansible==2.2.1.0 \
+        	'; \
+  	pip install $ansibleList; \
+  	\
+	
+  	curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
+  	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
+  	cd sshpass-${SSHPASS_VERSION}; \
+  	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; \
+  	\
+	
 	apk add --no-cache --virtual .run-deps \
 		libcrypto1.0 \
 	; \
@@ -106,30 +128,7 @@ RUN set -ex; \
 	apk del .build-deps; \
 	ln -s /usr/local/bin/bash /bin/bash; \
 	rm -f /build_openssh.sh;
-
-
-#install sshpass
-ENV SSHPASS_VERSION 1.06
-ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
-
-RUN curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
-	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
-	cd sshpass-${SSHPASS_VERSION}; \
-	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; 
 	
-	
-#install ansible
-RUN ansibleList=' \
-            pycrypto==2.6.1 \
-            ecdsa==0.13 \
-            paramiko==1.17.0 \
-            MarkupSafe==1.0 \
-            Jinja2==2.8 \
-            PyYAML==3.11 \
-            ansible==2.2.1.0 \
-        '; \
-  pip install $ansibleList;
-  
   
 #install geniso	
 RUN apk add --no-cache cdrkit
