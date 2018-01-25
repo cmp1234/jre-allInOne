@@ -77,19 +77,6 @@ RUN apk add --no-cache fontconfig ttf-dejavu
 RUN apk add --no-cache 'su-exec>=0.2'
 
 	
-#install ansible
-RUN ansibleList=' \
-            pycrypto==2.6.1 \
-            ecdsa==0.13 \
-            paramiko==1.17.0 \
-            MarkupSafe==1.0 \
-            Jinja2==2.8 \
-            PyYAML==3.11 \
-            ansible==2.2.1.0 \
-        '; \
-  pip install $ansibleList;
-	
-	
 #install openssh
 COPY build_openssh.sh /build_openssh.sh 
 RUN chmod +x /build_openssh.sh
@@ -130,6 +117,20 @@ RUN curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
 	cd sshpass-${SSHPASS_VERSION}; \
 	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; 
 	
+	
+#install ansible
+RUN ansibleList=' \
+            pycrypto==2.6.1 \
+            ecdsa==0.13 \
+            paramiko==1.17.0 \
+            MarkupSafe==1.0 \
+            Jinja2==2.8 \
+            PyYAML==3.11 \
+            ansible==2.2.1.0 \
+        '; \
+  pip install $ansibleList;
+  
+  
 #install geniso	
 RUN apk add --no-cache cdrkit
 
