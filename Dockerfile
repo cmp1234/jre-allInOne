@@ -76,16 +76,6 @@ RUN set -ex; \
 RUN apk add --no-cache fontconfig ttf-dejavu
 RUN apk add --no-cache 'su-exec>=0.2'
 
-
-#install sshpass
-ENV SSHPASS_VERSION 1.06
-ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
-
-RUN curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
-	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
-	cd sshpass-${SSHPASS_VERSION}; \
-	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; 
-	
 	
 #install ansible
 RUN ansibleList=' \
@@ -130,6 +120,15 @@ RUN set -ex; \
 	ln -s /usr/local/bin/bash /bin/bash; \
 	rm -f /build_openssh.sh;
 
+
+#install sshpass
+ENV SSHPASS_VERSION 1.06
+ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
+
+RUN curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
+	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
+	cd sshpass-${SSHPASS_VERSION}; \
+	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; 
 	
 #install geniso	
 RUN apk add --no-cache cdrkit
