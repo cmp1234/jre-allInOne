@@ -87,6 +87,7 @@ ENV SSHPASS_DOWNLOAD_URL https://nchc.dl.sourceforge.net/project/sshpass/sshpass
 RUN set -ex; \
 	\
 	apk add --no-cache --virtual .build-deps \
+		libffi \
 		coreutils \
 		gcc \
 		curl \
