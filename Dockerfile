@@ -109,7 +109,7 @@ RUN set -ex; \
             	MarkupSafe==1.0 \
             	Jinja2==2.8 \
             	PyYAML==3.11 \
-            	ansible==2.2.1.0 \
+            	ansible==2.4.2.0 \
         	'; \
   	pip install $ansibleList; \
   	\
