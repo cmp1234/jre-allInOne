@@ -88,6 +88,7 @@ RUN set -ex; \
 	\
 	apk add --no-cache --virtual .build-deps \
 		libffi \
+		libffi-dev \
 		coreutils \
 		gcc \
 		curl \
