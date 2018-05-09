@@ -116,7 +116,7 @@ RUN set -ex; \
   	pip install $ansibleList; \
   	\
 	
-  	curl -fSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
+  	curl -kfSL $SSHPASS_DOWNLOAD_URL -o sshpass-${SSHPASS_VERSION}.tar.gz; \
   	tar xvf sshpass-${SSHPASS_VERSION}.tar.gz; \
   	cd sshpass-${SSHPASS_VERSION}; \
   	./configure --prefix=/usr/local && make && make install && cd .. && rm sshpass-${SSHPASS_VERSION}* -rf; \
